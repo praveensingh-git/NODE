@@ -27,10 +27,25 @@ app
     return res.json(user);
   })
   .patch((req, res) => {
-    return res.json({ status: "pending" });
+    const id = parseInt(req.params.id);
+    const user = users.find((user) => user.id === id);
+
+    if (!user) return res.status(404).JSON({ error: "User not found" });
+    Object.assign(users.req.body);
+    fs.writeFile('./export.json',JSON.stringify(users),(err)=>{
+    if(err) res.status(500).JSON({error:"Failed to update File"})
+    return res.json({staus:"File updated Successfully"})
+    })
   })
   .delete((req, res) => {
-    return res.json({ status: "pending" });
+    const id = parseInt(req.params.id);
+    const index = users.findIndex((idx) => idx.id === id);
+    if (index === -1) return res.status(404).json({ error: "User not found" });
+    users.splice(index, 1);
+    fs.writeFile("./export.json", JSON.stringify(users), (err) => {
+      if (err) return res.status(500).JSON({ error: "Failed to upload File" });
+      return res.json({ status: "deleted", id });
+    });
   });
 app.post("/api/users", (req, res) => {
   const body = req.body; //app.use(express.urlencoded({extended:false}))
